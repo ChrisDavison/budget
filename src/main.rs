@@ -4,8 +4,24 @@ use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
 
 use shellexpand::tilde;
+use structopt::StructOpt;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+
+#[derive(Debug, StructOpt)]
+#[structopt(name="budget", about="summarise individual budget files")]
+struct Opt {
+    /// Directories to summarise
+    directories: Vec<String>,
+
+    /// Show individual categories, as well as summary
+    #[structopt(short, long)]
+    verbose: bool,
+
+    /// Show archive
+    #[structopt(short, long)]
+    archive: bool,
+}
 
 struct BudgetItem {
     name: String,
@@ -72,10 +88,12 @@ fn process_dir(dir: PathBuf) -> Result<Vec<BudgetItem>> {
 }
 
 fn main() -> Result<()> {
+    let opts = Opt::from_args();
+    println!("{:?}", opts);
     let args_dirs: Vec<String> = env::args().skip(1).collect();
     let finance_dir = env::var("FINANCES");
-    let mut root: Vec<String> = if !args_dirs.is_empty() {
-        args_dirs
+    let mut root: Vec<String> = if !opts.directories.is_empty() {
+        opts.directories
     } else if finance_dir.is_ok() {
         let mut v = Vec::new();
         for entry in std::fs::read_dir(finance_dir.unwrap())? {
@@ -94,9 +112,17 @@ fn main() -> Result<()> {
         let filename = tilde(&direc).to_string();
         let p = PathBuf::from(filename);
         let fname: String = p.file_name().unwrap().to_string_lossy().to_string();
+        if fname == "archive" && !opts.archive {
+            continue
+        }
         let entries = process_dir(p)?;
         let summed: f64 = entries.iter().map(|x| x.cost).sum();
         println!("{} ~ £{}", fname, summed);
+        if opts.verbose {
+            for entry in entries {
+                println!("{}", entry);
+            }
+        }
     }
     Ok(())
 }
