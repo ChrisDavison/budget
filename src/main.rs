@@ -89,10 +89,8 @@ fn process_dir(dir: PathBuf) -> Result<Vec<BudgetItem>> {
 
 fn main() -> Result<()> {
     let opts = Opt::from_args();
-    println!("{:?}", opts);
-    let args_dirs: Vec<String> = env::args().skip(1).collect();
     let finance_dir = env::var("FINANCES");
-    let mut root: Vec<String> = if !opts.directories.is_empty() {
+    let root: Vec<String> = if !opts.directories.is_empty() {
         opts.directories
     } else if finance_dir.is_ok() {
         let mut v = Vec::new();
@@ -112,12 +110,12 @@ fn main() -> Result<()> {
         let filename = tilde(&direc).to_string();
         let p = PathBuf::from(filename);
         let fname: String = p.file_name().unwrap().to_string_lossy().to_string();
-        if fname == "archive" && !opts.archive {
+        if fname.contains("archive") && !opts.archive {
             continue
         }
         let entries = process_dir(p)?;
         let summed: f64 = entries.iter().map(|x| x.cost).sum();
-        println!("{} ~ £{}", fname, summed);
+        println!("{:20} ~ £{}", fname, summed);
         if opts.verbose {
             for entry in entries {
                 println!("{}", entry);
