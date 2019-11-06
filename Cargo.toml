@@ -12,3 +12,4 @@ repository = "https://github.com/chrisdavison/budget"
 [dependencies]
 shellexpand = "*"
 structopt = "*"
+glob = "*"
