@@ -27,17 +27,14 @@ struct Opt {
     archive: bool,
 }
 
-
 fn process_dir(dir: PathBuf) -> Result<Vec<BudgetItem>> {
     if !dir.is_dir() {
         return Err(format!("{:?} is not a dir", dir).into());
     }
     let mut entries: Vec<BudgetItem> = dir
         .read_dir()?
-        .filter_map(|x| x.ok())
-        .filter(|x| x.path().is_file())
-        .map(|x| BudgetItem::new(x.path()))
-        .filter_map(|x| x.ok())
+        .filter_map(|x| x.map(|y| y.path()).ok())
+        .filter_map(|x| BudgetItem::new(x).ok())
         .collect();
 
     entries.sort_by(|x, y| {
