@@ -37,9 +37,9 @@ impl BudgetItem {
 impl fmt::Display for BudgetItem {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let date = match &self.date {
-            Some(s) => format!(" ({})", s),
+            Some(s) => format!("{}", s),
             None => "".to_string(),
         };
-        write!(f, "{:8} -- {}{}", self.cost, self.name, date)
+        write!(f, "{:<10}  {:30}{}", self.cost, self.name, date)
     }
 }

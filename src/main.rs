@@ -11,7 +11,7 @@ use budgetitem::BudgetItem;
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
 #[derive(Debug, StructOpt)]
-#[structopt(name="budget", about="summarise individual budget files")]
+#[structopt(name = "budget", about = "summarise individual budget files")]
 struct Opt {
     /// Directories to summarise
     directories: Vec<String>,
@@ -29,12 +29,12 @@ fn process_dir(dir: PathBuf) -> Result<Vec<BudgetItem>> {
     if !dir.is_dir() {
         return Err(format!("{:?} is not a dir", dir).into());
     }
-    let mut entries: Vec<BudgetItem> = dir
-        .read_dir()?
-        .filter_map(|x| x.map(|y| y.path()).ok())
-        .filter_map(|x| BudgetItem::new(x).ok())
-        .collect();
-
+    let mut entries = Vec::new();
+    for entry in dir.read_dir()? {
+        if let Ok(x) = entry {
+            entries.push(BudgetItem::new(x.path())?);
+        }
+    }
     entries.sort_by(|x, y| {
         if x.cost - y.cost > 0.0001 {
             std::cmp::Ordering::Greater
@@ -62,7 +62,7 @@ fn main() -> Result<()> {
         }
         v
     } else {
-        return Err("Must provide directories, or set FINANCES env var".into())
+        return Err("Must provide directories, or set FINANCES env var".into());
     };
 
     for direc in root {
@@ -70,16 +70,19 @@ fn main() -> Result<()> {
         let p = PathBuf::from(filename);
         let fname: String = p.file_name().unwrap().to_string_lossy().to_string();
         if fname.contains("archive") && !opts.archive {
-            continue
+            continue;
         }
         let entries = process_dir(p)?;
         let summed: f64 = entries.iter().map(|x| x.cost).sum();
-        println!("{:20} ~ £{}", fname, summed);
+        let titlestring = format!("£{:<10.0} {:20}", summed, fname);
+        println!("{}", titlestring);
+        println!("{}", "=".repeat(titlestring.trim().len()));
         if opts.verbose {
             for entry in entries {
                 println!("{}", entry);
             }
         }
+        println!();
     }
     Ok(())
 }
