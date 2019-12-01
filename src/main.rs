@@ -23,6 +23,10 @@ struct Opt {
     /// Show archive
     #[structopt(short, long)]
     archive: bool,
+
+    /// Show only a specific folder
+    #[structopt(short, long)]
+    folder: Option<String>,
 }
 
 fn process_dir(dir: PathBuf) -> Result<Vec<BudgetItem>> {
@@ -65,10 +69,23 @@ fn main() -> Result<()> {
         return Err("Must provide directories, or set FINANCES env var".into());
     };
 
+    let folder_to_filter = match opts.folder {
+        Some(foldername) => {
+            if opts.verbose {
+                println!("Only showing folder `{}`\n", foldername);
+            }
+            foldername
+        }
+        None => String::new(),
+    };
     for direc in root {
         let filename = tilde(&direc).to_string();
         let p = PathBuf::from(filename);
         let fname: String = p.file_name().unwrap().to_string_lossy().to_string();
+        if folder_to_filter != "" && folder_to_filter != fname {
+            continue;
+        }
+
         if fname.contains("archive") && !opts.archive {
             continue;
         }
@@ -76,13 +93,17 @@ fn main() -> Result<()> {
         let summed: f64 = entries.iter().map(|x| x.cost).sum();
         let titlestring = format!("£{:<10.0} {:20}", summed, fname);
         println!("{}", titlestring);
-        println!("{}", "=".repeat(titlestring.trim().len()));
+        if opts.verbose {
+            println!("{}", "=".repeat(titlestring.trim().len()));
+        }
         if opts.verbose {
             for entry in entries {
                 println!("{}", entry);
             }
         }
-        println!();
+        if opts.verbose {
+            println!();
+        }
     }
     Ok(())
 }
