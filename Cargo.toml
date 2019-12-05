@@ -1,14 +1,14 @@
 [package]
 name = "budget"
-version = "0.3.0"
+version = "0.3.1"
 authors = ["Chris Davison <c.jr.davison@gmail.com>"]
 edition = "2018"
-license = "MIT"
+license = "GPL-3.0-only"
 description = "Summarise budget/finance information with file-per-finance"
 repository = "https://github.com/chrisdavison/budget"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-shellexpand = "*"
-structopt = "*"
+shellexpand = "1.0"
+structopt = "0.3.3"
