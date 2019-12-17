@@ -14,3 +14,9 @@ check:
 
 format fmt:
 	cargo fmt
+
+pubcheck:
+	cargo publish --dry-run
+
+publish:
+	cargo publish
