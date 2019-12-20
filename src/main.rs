@@ -65,11 +65,15 @@ fn main() -> Result<()> {
         .collect();
 
     let total_for_matching: f64 = matching_files.iter().map(|x| x.cost).sum();
-    println!(
-        "Total for `{}`: {:.2}",
-        tagmap_matching_keys.join("+"),
-        total_for_matching
-    );
+    if opts.tags.is_empty() {
+        println!("Total: {:.2}", total_for_matching);
+    } else {
+        println!(
+            "Total for `{}`: {:.2}",
+            tagmap_matching_keys.join("+"),
+            total_for_matching
+        );
+    }
 
     if !opts.all {
         if opts.verbose {
@@ -94,4 +98,3 @@ fn main() -> Result<()> {
 
     Ok(())
 }
-
