@@ -27,7 +27,13 @@ impl BudgetItem {
             if parts[0] == "name" {
                 name = parts[1].into();
             } else if parts[0] == "cost" {
-                cost = parts[1].parse()?;
+                cost = match parts[1].parse() {
+                    Ok(c) => c,
+                    Err(e) => {
+                        eprintln!("{:?}: {}", filepath, e);
+                        return Err(format!("{}", e).into());
+                    }
+                }
             } else if parts[0] == "date" {
                 date = Some(parts[1].into());
             }
