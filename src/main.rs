@@ -40,7 +40,10 @@ fn main() -> Result<()> {
         }
     };
 
-    let tags = opts.tags.iter().map(|x| x.as_str()).collect::<Vec<&str>>();
+    let mut tags = opts.tags.iter().map(|x| x.as_str()).collect::<Vec<&str>>();
+    if !opts.archive {
+        tags.push("!archive");
+    }
     let filter = Filter::new(&tags, false);
     let mut tag_map: Map<String, Vec<BudgetItem>> = Map::new();
     let mut matching_files = Vec::new();
