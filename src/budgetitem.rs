@@ -1,8 +1,9 @@
-use super::{Result,get_tags_for_file};
+use super::{get_tags_for_file, Result};
 use std::fmt;
 use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
 
+#[derive(Clone)]
 pub struct BudgetItem {
     pub name: String,
     pub cost: f64,
@@ -32,7 +33,12 @@ impl BudgetItem {
             }
         }
         let tags = get_tags_for_file(&filepath);
-        Ok(BudgetItem { name, cost, date, tags })
+        Ok(BudgetItem {
+            name,
+            cost,
+            date,
+            tags,
+        })
     }
 }
 
