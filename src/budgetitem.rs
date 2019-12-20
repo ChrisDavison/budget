@@ -1,4 +1,4 @@
-use super::Result;
+use super::{Result,get_tags_for_file};
 use std::fmt;
 use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
@@ -7,6 +7,7 @@ pub struct BudgetItem {
     pub name: String,
     pub cost: f64,
     pub date: Option<String>,
+    pub tags: Vec<String>,
 }
 
 impl BudgetItem {
@@ -17,7 +18,7 @@ impl BudgetItem {
         let mut name = String::new();
         let mut cost = 0.0;
         let mut date: Option<String> = None;
-        let f = std::fs::File::open(filepath)?;
+        let f = std::fs::File::open(filepath.clone())?;
         let reader = BufReader::new(f);
         for line in reader.lines() {
             let line = line?;
@@ -30,7 +31,8 @@ impl BudgetItem {
                 date = Some(parts[1].into());
             }
         }
-        Ok(BudgetItem { name, cost, date })
+        let tags = get_tags_for_file(&filepath);
+        Ok(BudgetItem { name, cost, date, tags })
     }
 }
 

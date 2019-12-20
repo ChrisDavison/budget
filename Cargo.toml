@@ -1,6 +1,6 @@
 [package]
 name = "budget"
-version = "0.3.1"
+version = "0.4.0"
 authors = ["Chris Davison <c.jr.davison@gmail.com>"]
 edition = "2018"
 license = "GPL-3.0-only"
@@ -12,3 +12,7 @@ repository = "https://github.com/chrisdavison/budget"
 [dependencies]
 shellexpand = "1.0"
 structopt = "0.3.3"
+regex = "1"
+glob = "0.3.0"
+lazy_static = "1.4.0"
+tagsearch = "0.13.0"
