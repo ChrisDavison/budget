@@ -56,14 +56,9 @@ fn main() -> Result<()> {
             matching_files.push(b);
         }
     }
-    let tagmap_matching_keys: Vec<String> = tag_map
+    let tagmap_related_keywords: Vec<String> = tag_map
         .keys()
-        .filter(|k| tags.contains(&k.as_str()))
-        .map(|x| x.to_owned())
-        .collect();
-    let tagmap_related_keys: Vec<String> = tag_map
-        .keys()
-        .filter(|k| !tags.contains(&k.as_str()))
+        .filter(|keyword| !tags.contains(&keyword.as_str()))
         .map(|x| x.to_owned())
         .collect();
 
@@ -73,7 +68,7 @@ fn main() -> Result<()> {
     } else {
         println!(
             "Total for `{}`: {:.2}",
-            tagmap_matching_keys.join("+"),
+            opts.tags.join("+"),
             total_for_matching
         );
     }
@@ -85,7 +80,7 @@ fn main() -> Result<()> {
             }
             println!();
         }
-        println!("Related: {}", tagmap_related_keys.join(" "));
+        println!("Related: {}", tagmap_related_keywords.join(" "));
     } else {
         println!("\nBreakdown for matching tags");
         for (key, budgetitems) in tag_map {
